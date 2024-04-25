@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Health Care Center</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+    <style>
+        .logo {
+            width: 50px;
+            height: 50px;
+            color: black;
+            margin-top: 0;
+            margin-left: 2px;
+        }
+
+        .myimg {
+            width: 50px;
+            height: 50px;
+            border: 2px solid black;
+            border-radius: 25px;
+        }
+    </style>
+</head>
+<body>
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+        <!-- Logo at the top-left corner -->
+        <div class="logo">
+            <img class="myimg" src="{{ url_for('static', filename='img.png') }}" alt="">
+        </div>
+        <a class="navbar-brand" href="#">Health Center</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="#">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/about">About</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/contact">Contact</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/developer">Developer</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/blog">Blog</a>
+                </li>
+            </ul>
+            <form class="d-flex" role="search">
+                <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                <button class="btn btn-outline-success" type="submit">Search</button>
+            </form>
+        </div>
+    </div>
+</nav>
+
+<!-- main form of page -->
+<h1 class="mt-4 my-4 text-center text-green">Health Care Center</h1>
+<div class="container my-4 mt-4" style="background: black; color: white; border-radius: 15px; padding: 40px;">
+    <form action="/predict" method="post">
+        <div class="form-group">
+            <label for="symptoms">Select Symptoms:</label>
+            <input type="text" class="form-control" id="symptoms" name="symptoms" placeholder="type symptoms such as itching, sleeping, aching etc">
+        </div>
+        <br>
+        <button type="button" id="startSpeechRecognition" class="btn btn-primary" style="margin-left:3px;border:1px solid white; border-radius:20px;">
+            Start Speech Recognition
+        </button>
+        <br>
+
+        <!-- Display the transcribed text here -->
+        <div name="mysysms" id="transcription"></div>
+
+        {% if message %}
+        <p>{{ message }}</p>
+        {% endif %}
+        <br>
+
+        <button type="submit" class="btn btn-danger btn-lg" style="width: 100%; padding: 14px; margin-bottom: 5px;">Predict</button>
+    </form>
+
+    <!-- Buttons for fetching data -->
+    <div class="text-center mt-4">
+        <button type="button" class="btn btn-primary" onclick="fetchDescription()">Description</button>
+        <button type="button" class="btn btn-primary" onclick="fetchDiet()">Diet</button>
+        <button type="button" class="btn btn-primary" onclick="fetchMedication()">Medication</button>
+        <button type="button" class="btn btn-primary" onclick="fetchPrecaution()">Precaution</button>
+        <button type="button" class="btn btn-primary" onclick="fetchSymptom()">Symptom</button>
+        <button type="button" class="btn btn-primary" onclick="fetchTraining()">Training</button>
+        <button type="button" class="btn btn-primary" onclick="fetchWorkout()">Workout</button>
+    </div>
+</div>
+
+<!-- Modals for displaying fetched data -->
+<!-- Description Modal -->
+<div class="modal fade" id="descriptionModal" tabindex="-1" aria-labelledby="descriptionModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="descriptionModalLabel">Description</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="descriptionContent">
+                <!-- Content fetched via JavaScript will be displayed here -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Diet Modal -->
+<div class="modal fade" id="dietModal" tabindex="-1" aria-labelledby="dietModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="dietModalLabel">Diet</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="dietContent">
+                <!-- Content fetched via JavaScript will be displayed here -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Medication Modal -->
+<div class="modal fade" id="medicationModal" tabindex="-1" aria-labelledby="medicationModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="medicationModalLabel">Medication</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="medicationContent">
+                <!-- Content fetched via JavaScript will be displayed here -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Precaution Modal -->
+<div class="modal fade" id="precautionModal" tabindex="-1" aria-labelledby="precautionModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="precautionModalLabel">Precaution</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="precautionContent">
+                <!-- Content fetched via JavaScript will be displayed here -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Symptom Modal -->
+<div class="modal fade" id="symptomModal" tabindex="-1" aria-labelledby="symptomModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="symptomModalLabel">Symptom</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="symptomContent">
+                <!-- Content fetched via JavaScript will be displayed here -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Training Modal -->
+<div class="modal fade" id="trainingModal" tabindex="-1" aria-labelledby="trainingModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="trainingModalLabel">Training</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="trainingContent">
+                <!-- Content fetched via JavaScript will be displayed here -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Workout Modal -->
+<div class="modal fade" id="workoutModal" tabindex="-1" aria-labelledby="workoutModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="workoutModalLabel">Workout</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="workoutContent">
+                <!-- Content fetched via JavaScript will be displayed here -->
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript -->
+<script>
+    // Function to fetch description data
+    function fetchDescription() {
+        // Perform an AJAX request to fetch description data from the server using a specific route
+        // Update the content of the description modal with the fetched data
+        // Example: $('#descriptionContent').html(responseData);
+    }
+
+    // Function to fetch diet data
+    function fetchDiet() {
+        // Perform an AJAX request to fetch diet data from the server using a specific route
+        // Update the content of the diet modal with the fetched data
+        // Example: $('#dietContent').html(responseData);
+    }
+
+    // Function to fetch medication data
+    function fetchMedication() {
+        // Perform an AJAX request to fetch medication data from the server using a specific route
+        // Update the content of the medication modal with the fetched data
+        // Example: $('#medicationContent').html(responseData);
+    }
+
+    // Function to fetch precaution data
+    function fetchPrecaution() {
+        // Perform an AJAX request to fetch precaution data from the server using a specific route
+        // Update the content of the precaution modal with the fetched data
+        // Example: $('#precautionContent').html(responseData);
+    }
+
+    // Function to fetch symptom data
+    function fetchSymptom() {
+        // Perform an AJAX request to fetch symptom data from the server using a specific route
+        // Update the content of the symptom modal with the fetched data
+        // Example: $('#symptomContent').html(responseData);
+    }
+
+    // Function to fetch training data
+    function fetchTraining() {
+        // Perform an AJAX request to fetch training data from the server using a specific route
+        // Update the content of the training modal with the fetched data
+        // Example: $('#trainingContent').html(responseData);
+    }
+
+    // Function to fetch workout data
+    function fetchWorkout() {
+        // Perform an AJAX request to fetch workout data from the server using a specific route
+        // Update the content of the workout modal with the fetched data
+        // Example: $('#workoutContent').html(responseData);
+    }
+
+    // Start Speech Recognition
+    const startSpeechRecognitionButton = document.getElementById('startSpeechRecognition');
+    const transcriptionDiv = document.getElementById('transcription');
+
+    startSpeechRecognitionButton.addEventListener('click', startSpeechRecognition);
+
+    function startSpeechRecognition() {
+        const recognition = new webkitSpeechRecognition(); // Use webkitSpeechRecognition for compatibility
+
+        recognition.lang = 'en-US'; // Set the language for recognition
+
+        recognition.onresult = function (event) {
+            const result = event.results[0][0].transcript;
+            transcriptionDiv.textContent = result;
+        };
+
+        recognition.onend = function () {
+            console.log('Speech recognition ended.');
+        };
+
+        recognition.start();
+    }
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
+</body>
+</html>
